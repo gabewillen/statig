@@ -176,6 +176,7 @@ mod tests {
     impl Foo {
         /// s11
         pub async fn s11(&mut self, event: &Event) -> Response {
+            println!("s11");
             match event {
                 Event::A => Transition(State::S11),
                 Event::B => Transition(State::S12),
@@ -195,6 +196,7 @@ mod tests {
 
         /// s12
         async fn s12(&mut self, event: &Event) -> Response {
+            println!("s12");
             match event {
                 Event::C => Transition(State::S211),
                 _ => Super,
@@ -214,6 +216,7 @@ mod tests {
         /// s1
         #[allow(unused)]
         async fn s1(&mut self, event: &Event) -> Response {
+            println!("s1");
             Super
         }
 
@@ -280,6 +283,7 @@ mod tests {
         /// s
         #[allow(unused)]
         async fn s(&mut self, event: &Event) -> Response {
+            println!("s");
             Handled
         }
 

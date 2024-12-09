@@ -1,8 +1,8 @@
+use crate::awaitable::State;
 #[cfg(feature = "async")]
 use crate::awaitable::{self, StateExt as _};
 use crate::blocking::{self, StateExt as _};
 use crate::{IntoStateMachine, Response};
-
 /// Private internal representation of a state machine that is used for the public types.
 pub(crate) struct Inner<M>
 where
@@ -76,14 +76,27 @@ where
         event: &M::Event<'_>,
         context: &mut M::Context<'_>,
     ) {
-        let response = self
-            .state
-            .handle(&mut self.shared_storage, event, context)
-            .await;
-        match response {
-            Response::Super => {}
-            Response::Handled => {}
-            Response::Transition(state) => self.async_transition(state, context).await,
+        loop {
+            let response = self
+                .state
+                .handle(&mut self.shared_storage, event, context)
+                .await;
+            match response {
+                Response::Super => return,
+                Response::Handled => return,
+                Response::Transition(state) => {
+                    let is_self_transition =
+                        <<M as IntoStateMachine>::State as crate::awaitable::StateExt<M>>::same_state(
+                            &state,
+                            &self.state,
+                        );
+                    self.async_transition(state, context).await;
+                    if is_self_transition {
+                        // If the transition is a self transition, we need to return immediately
+                        return;
+                    }
+                }
+            }
         }
     }
 

@@ -46,6 +46,7 @@ mod tests {
             exit_action = "exit_s11"
         )]
         pub async fn s11(&mut self, event: &Event) -> Response {
+            println!("s11");
             match event {
                 Event::A => Transition(State::s11()),
                 Event::B => Transition(State::s12()),
@@ -72,6 +73,7 @@ mod tests {
             exit_action = "exit_s12"
         )]
         pub async fn s12(&mut self, event: &Event) -> Response {
+            println!("s12");
             match event {
                 Event::C => Transition(State::s211()),
                 _ => Super,
@@ -94,6 +96,7 @@ mod tests {
         #[allow(unused)]
         #[superstate(superstate = "s", entry_action = "enter_s1", exit_action = "exit_s1")]
         pub async fn s1(&mut self, event: &Event) -> Response {
+            println!("s1");
             Super
         }
 
@@ -180,6 +183,7 @@ mod tests {
         #[allow(unused)]
         #[superstate(entry_action = "enter_s", exit_action = "exit_s")]
         pub async fn s(&mut self, event: &Event) -> Response {
+            println!("s");
             Handled
         }
 
